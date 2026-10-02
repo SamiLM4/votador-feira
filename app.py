@@ -83,6 +83,124 @@ st.markdown("""
         margin: 0.5rem 0;
         font-size: 1.1rem;
     }
+
+    /* Responsivo para mobile */
+    @media (max-width: 768px) {
+        .main {
+            padding: 1rem;
+        }
+
+        .titulo-principal {
+            padding: 1.5rem 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .titulo-principal h1 {
+            font-size: 1.5rem !important;
+        }
+
+        .titulo-principal p {
+            font-size: 0.9rem !important;
+        }
+
+        .resumo-box {
+            padding: 1.5rem 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-item {
+            font-size: 0.95rem;
+        }
+
+        .stSelectbox {
+            margin: 0.75rem 0;
+        }
+
+        .stSlider {
+            margin: 0.75rem 0;
+        }
+
+        /* Estrelas responsivas */
+        .estrela-btn {
+            font-size: 2rem !important;
+        }
+
+        /* Botões maiores em mobile */
+        .stButton > button {
+            width: 100% !important;
+            padding: 0.75rem !important;
+            font-size: 1rem !important;
+        }
+
+        /* Subheadings menores */
+        h2 {
+            font-size: 1.3rem !important;
+        }
+
+        h3 {
+            font-size: 1.1rem !important;
+        }
+
+        /* Spacing ajustado */
+        .stMarkdown {
+            margin: 0.5rem 0 !important;
+        }
+
+        /* Colunas responsivas */
+        [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+            margin-right: 0 !important;
+            margin-bottom: 1rem !important;
+        }
+
+        /* Grid layout responsivo para colunas */
+        [data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 0.5rem !important;
+        }
+
+        [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+            flex: 1 1 100% !important;
+            min-width: 0 !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .main {
+            padding: 0.75rem;
+        }
+
+        .titulo-principal {
+            padding: 1rem 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .titulo-principal h1 {
+            font-size: 1.2rem !important;
+        }
+
+        .titulo-principal p {
+            font-size: 0.8rem !important;
+        }
+
+        .resumo-box {
+            padding: 1rem 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .info-item {
+            font-size: 0.85rem;
+        }
+
+        .estrela-btn {
+            font-size: 1.5rem !important;
+        }
+
+        /* Ocultar textos longos em mobile muito pequeno */
+        .stMarkdown p {
+            font-size: 0.9rem !important;
+        }
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -143,13 +261,6 @@ def votar_projeto(projeto_id, numero_votos, estrelas, progress_bar, status_text)
             try:
                 url_projeto = f"https://cti.colegios.fve.edu.br/feira/projeto.html?id={projeto_id}"
 
-                # Faz requisição GET para carregar a página
-                response = session.get(url_projeto, headers=headers, timeout=10)
-                response.raise_for_status()
-
-                # Extrai token CSRF se existir (comum em formulários)
-                soup = BeautifulSoup(response.content, 'html.parser')
-
                 # Prepara dados para POST da votação
                 dados = {
                     'projeto_id': projeto_id,
@@ -192,13 +303,13 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-col1, col2 = st.columns([3, 1])
+col1, col2 = st.columns([1, 1])
 
 with col1:
     st.subheader("🔍 Selecione um Projeto")
 
 with col2:
-    if st.button("🔄 Recarregar", use_container_width=True):
+    if st.button("🔄 Recarregar", use_container_width=True, key="reload_btn"):
         st.cache_resource.clear()
         st.rerun()
 
@@ -226,40 +337,35 @@ projeto = projetos[projeto_selecionado_idx]
 
 st.markdown("---")
 
-col1, col2 = st.columns(2)
+st.subheader("⭐ Quantas Estrelas?")
+st.write("Clique para selecionar:")
 
-with col1:
-    st.subheader("⭐ Quantas Estrelas?")
+cols = st.columns(5)
+estrelas_selecionadas = 5  # padrão
 
-    # Seleção de estrelas com botões
-    st.write("Clique para selecionar:")
+for i in range(5):
+    with cols[i]:
+        if st.button(ESTRELAS[i+1], key=f"star_{i+1}", use_container_width=True):
+            estrelas_selecionadas = i + 1
 
-    cols = st.columns(5)
-    estrelas_selecionadas = 5  # padrão
+# Exibe seleção atual
+st.markdown(f"""
+    <div style='text-align: center; margin-top: 1rem; font-size: 2.5rem;'>
+    {ESTRELAS[estrelas_selecionadas]}
+    </div>
+""", unsafe_allow_html=True)
 
-    for i in range(5):
-        with cols[i]:
-            if st.button(ESTRELAS[i+1], key=f"star_{i+1}", use_container_width=True):
-                estrelas_selecionadas = i + 1
+st.markdown("---")
 
-    # Exibe seleção atual
-    st.markdown(f"""
-        <div style='text-align: center; margin-top: 1rem; font-size: 2rem;'>
-        {ESTRELAS[estrelas_selecionadas]}
-        </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-    st.subheader("🔢 Quantos Votos?")
-
-    num_votos = st.slider(
-        "Número de vezes que deseja votar:",
-        min_value=1,
-        max_value=500,
-        value=10,
-        step=1,
-        label_visibility="collapsed"
-    )
+st.subheader("🔢 Quantos Votos?")
+num_votos = st.slider(
+    "Número de vezes que deseja votar:",
+    min_value=1,
+    max_value=500,
+    value=10,
+    step=1,
+    label_visibility="collapsed"
+)
 
 st.markdown("---")
 
