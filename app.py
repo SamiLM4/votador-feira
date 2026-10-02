@@ -1,5 +1,4 @@
 import streamlit as st
-from bs4 import BeautifulSoup
 import requests
 import re
 import time
@@ -87,7 +86,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-URL_BASE = "https://cti.colegios.fve.edu.br/feira/index.html"
+URL_API = "https://cti.colegios.fve.edu.br/feira/api/v1/projetos/publicos"
 
 # Emojis das estrelas
 ESTRELAS = {
@@ -100,44 +99,26 @@ ESTRELAS = {
 
 @st.cache_resource
 def extrair_projetos():
-    """Extrai títulos e links dos projetos usando requests."""
+    """Extrai projetos da API pública."""
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
-        response = requests.get(URL_BASE, headers=headers, timeout=10)
+        response = requests.get(URL_API, timeout=10)
         response.raise_for_status()
 
-        soup = BeautifulSoup(response.content, 'html.parser')
-        grade = soup.find('section', id='grade')
+        data = response.json()
 
-        if not grade:
+        if not data.get('success') or not data.get('data', {}).get('projetos'):
             return []
 
-        cards = grade.find_all('article', class_='card-projeto')
-
         projetos = []
-        for idx, card in enumerate(cards):
+        for idx, projeto in enumerate(data['data']['projetos']):
             try:
-                titulo_elem = card.find('strong')
-                if not titulo_elem:
-                    continue
-                titulo = titulo_elem.text.strip()
-
-                link_elem = card.find('a', class_='botao')
-                if not link_elem:
-                    continue
-                link = link_elem.get('href', '')
-
-                match = re.search(r'id=([a-zA-Z0-9]+)', link)
-                if match:
-                    projeto_id = match.group(1)
-                    projetos.append({
-                        "id": idx,
-                        "titulo": titulo,
-                        "link": link,
-                        "projeto_id": projeto_id
-                    })
+                projetos.append({
+                    "id": idx,
+                    "titulo": projeto.get('tema', '').strip(),
+                    "projeto_id": projeto.get('id', ''),
+                    "curso": projeto.get('curso', ''),
+                    "descricao": projeto.get('descricao', '')
+                })
             except:
                 continue
 
