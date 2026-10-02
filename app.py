@@ -32,41 +32,69 @@ st.markdown("""
     }
 
     body {
-        background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+        background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1625 100%);
         color: var(--dark-text);
+    }
+
+    [data-testid="stAppViewContainer"] {
+        background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1625 100%);
     }
 
     .main {
-        background: var(--dark-bg);
-        padding: 2rem;
-        border-radius: 20px;
+        background: transparent;
+        padding: 0;
         color: var(--dark-text);
     }
 
-    .stSelectbox, .stSlider {
-        margin: 1rem 0;
+    /* Container centralizado */
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        background: var(--dark-card);
+        border-radius: 20px;
+        padding: 2.5rem;
+        max-width: 600px;
+        margin: 2rem auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+    }
+
+    .stSelectbox, .stSlider, .stNumberInput {
+        margin: 1.2rem 0;
+    }
+
+    /* Centraliza o conteúdo */
+    .stApp {
+        display: flex;
+        justify-content: center;
+    }
+
+    [data-testid="stMainBlockContainer"] {
+        display: flex;
+        justify-content: center;
+        width: 100%;
     }
 
     .titulo-principal {
         text-align: center;
         background: var(--primary-gradient);
         color: white;
-        padding: 3rem 2rem;
-        border-radius: 20px;
-        margin-bottom: 2rem;
+        padding: 2.5rem 2rem;
+        border-radius: 16px;
+        margin: 0 0 2rem 0;
         box-shadow: 0 8px 32px 0 rgba(102, 126, 234, 0.3);
         border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .titulo-principal h1 {
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
+        font-size: 2.2rem;
+        margin: 0 0 0.3rem 0;
         font-weight: 700;
+        letter-spacing: -0.5px;
     }
 
     .titulo-principal p {
-        font-size: 1.1rem;
-        opacity: 0.95;
+        font-size: 0.95rem;
+        opacity: 0.9;
+        margin: 0;
     }
 
     .card-projeto {
@@ -186,21 +214,23 @@ st.markdown("""
 
     /* Responsivo para mobile */
     @media (max-width: 768px) {
-        .main {
-            padding: 1rem;
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            padding: 1.5rem;
+            margin: 1rem;
+            max-width: calc(100% - 2rem);
         }
 
         .titulo-principal {
-            padding: 2rem 1rem;
+            padding: 1.5rem 1rem;
             margin-bottom: 1.5rem;
         }
 
         .titulo-principal h1 {
-            font-size: 1.8rem !important;
+            font-size: 1.6rem !important;
         }
 
         .titulo-principal p {
-            font-size: 0.95rem !important;
+            font-size: 0.85rem !important;
         }
 
         .resumo-box {
@@ -266,43 +296,45 @@ st.markdown("""
     }
 
     @media (max-width: 480px) {
-        .main {
-            padding: 0.75rem;
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            padding: 1rem;
+            margin: 0.5rem;
+            max-width: calc(100% - 1rem);
         }
 
         .titulo-principal {
-            padding: 1.5rem 0.75rem;
+            padding: 1.2rem 0.8rem;
             margin-bottom: 1rem;
         }
 
         .titulo-principal h1 {
-            font-size: 1.4rem !important;
+            font-size: 1.3rem !important;
         }
 
         .titulo-principal p {
-            font-size: 0.85rem !important;
+            font-size: 0.8rem !important;
         }
 
         .resumo-box {
-            padding: 1.2rem 0.75rem;
+            padding: 1rem 0.8rem;
             margin: 1rem 0;
         }
 
         .info-item {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .estrela-btn {
-            font-size: 1.8rem !important;
+            font-size: 1.6rem !important;
         }
 
         /* Ocultar textos longos em mobile muito pequeno */
         .stMarkdown p {
-            font-size: 0.9rem !important;
+            font-size: 0.85rem !important;
         }
 
         h3 {
-            font-size: 1rem !important;
+            font-size: 0.95rem !important;
         }
     }
 
