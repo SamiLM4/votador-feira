@@ -212,6 +212,25 @@ st.markdown("""
         background: var(--primary-gradient) !important;
     }
 
+    /* Metric styling */
+    [data-testid="metric-container"] {
+        background: var(--primary-gradient) !important;
+        padding: 1.5rem !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    [data-testid="metric-container"] > div {
+        color: white !important;
+    }
+
+    [data-testid="metric-container"] span {
+        color: white !important;
+        font-weight: 600 !important;
+        font-size: 1.5rem !important;
+    }
+
     /* Responsivo para mobile */
     @media (max-width: 768px) {
         [data-testid="stVerticalBlockBorderWrapper"] {
