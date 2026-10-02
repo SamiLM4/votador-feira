@@ -10,7 +10,7 @@ st.set_page_config(
     menu_items=None
 )
 
-# CSS customizado
+# CSS customizado com tema escuro
 st.markdown("""
     <style>
     * {
@@ -18,14 +18,29 @@ st.markdown("""
         padding: 0;
     }
 
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --primary-light: linear-gradient(135deg, #8b9ef8 0%, #9b6db3 100%);
+        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --dark-bg: #0f1419;
+        --dark-card: #1a1f2e;
+        --dark-text: #e0e0e0;
+    }
+
+    html {
+        color-scheme: dark light;
+    }
+
     body {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+        color: var(--dark-text);
     }
 
     .main {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background: var(--dark-bg);
         padding: 2rem;
         border-radius: 20px;
+        color: var(--dark-text);
     }
 
     .stSelectbox, .stSlider {
@@ -34,27 +49,40 @@ st.markdown("""
 
     .titulo-principal {
         text-align: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--primary-gradient);
         color: white;
-        padding: 2rem;
-        border-radius: 15px;
+        padding: 3rem 2rem;
+        border-radius: 20px;
         margin-bottom: 2rem;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        box-shadow: 0 8px 32px 0 rgba(102, 126, 234, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .titulo-principal h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .titulo-principal p {
+        font-size: 1.1rem;
+        opacity: 0.95;
     }
 
     .card-projeto {
-        background: white;
+        background: var(--dark-card);
         padding: 1.5rem;
         border-radius: 12px;
         border-left: 5px solid #667eea;
         margin: 1rem 0;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         transition: all 0.3s ease;
+        border: 1px solid rgba(102, 126, 234, 0.2);
     }
 
     .card-projeto:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
     }
 
     .estrelas-container {
@@ -68,20 +96,92 @@ st.markdown("""
         font-size: 3rem;
         cursor: pointer;
         transition: all 0.2s;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .estrela-btn:hover {
+        transform: scale(1.1);
+        filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.4));
     }
 
     .resumo-box {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--primary-gradient);
         color: white;
         padding: 2rem;
         border-radius: 15px;
         margin: 2rem 0;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        box-shadow: 0 8px 32px 0 rgba(102, 126, 234, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .resumo-box h3 {
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        font-weight: 600;
     }
 
     .info-item {
-        margin: 0.5rem 0;
-        font-size: 1.1rem;
+        margin: 0.8rem 0;
+        font-size: 1rem;
+        opacity: 0.95;
+    }
+
+    /* Styling para inputs */
+    .stSelectbox [data-baseweb="select"] {
+        background-color: var(--dark-card) !important;
+        border-color: rgba(102, 126, 234, 0.3) !important;
+    }
+
+    .stSlider [data-testid="stThumb"] {
+        background: var(--primary-gradient) !important;
+    }
+
+    /* Botões */
+    .stButton > button {
+        background: var(--primary-gradient) !important;
+        border: none !important;
+        border-radius: 8px !important;
+        color: white !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+    }
+
+    .stButton > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+    }
+
+    /* Subheadings */
+    h2, h3 {
+        color: white !important;
+        font-weight: 600 !important;
+    }
+
+    /* Markdown text */
+    .stMarkdown {
+        color: var(--dark-text) !important;
+    }
+
+    /* Dividers */
+    hr {
+        border-color: rgba(102, 126, 234, 0.2) !important;
+    }
+
+    /* Success/Warning/Error messages */
+    .stAlert {
+        border-radius: 10px !important;
+        border: 1px solid rgba(102, 126, 234, 0.2) !important;
+    }
+
+    /* Spinner */
+    .stSpinner {
+        color: #667eea !important;
+    }
+
+    /* Progress bar */
+    .stProgress > div > div > div {
+        background: var(--primary-gradient) !important;
     }
 
     /* Responsivo para mobile */
@@ -91,16 +191,16 @@ st.markdown("""
         }
 
         .titulo-principal {
-            padding: 1.5rem 1rem;
+            padding: 2rem 1rem;
             margin-bottom: 1.5rem;
         }
 
         .titulo-principal h1 {
-            font-size: 1.5rem !important;
+            font-size: 1.8rem !important;
         }
 
         .titulo-principal p {
-            font-size: 0.9rem !important;
+            font-size: 0.95rem !important;
         }
 
         .resumo-box {
@@ -122,23 +222,23 @@ st.markdown("""
 
         /* Estrelas responsivas */
         .estrela-btn {
-            font-size: 2rem !important;
+            font-size: 2.2rem !important;
         }
 
         /* Botões maiores em mobile */
         .stButton > button {
             width: 100% !important;
-            padding: 0.75rem !important;
+            padding: 0.85rem !important;
             font-size: 1rem !important;
         }
 
         /* Subheadings menores */
         h2 {
-            font-size: 1.3rem !important;
+            font-size: 1.5rem !important;
         }
 
         h3 {
-            font-size: 1.1rem !important;
+            font-size: 1.2rem !important;
         }
 
         /* Spacing ajustado */
@@ -171,35 +271,59 @@ st.markdown("""
         }
 
         .titulo-principal {
-            padding: 1rem 0.75rem;
+            padding: 1.5rem 0.75rem;
             margin-bottom: 1rem;
         }
 
         .titulo-principal h1 {
-            font-size: 1.2rem !important;
+            font-size: 1.4rem !important;
         }
 
         .titulo-principal p {
-            font-size: 0.8rem !important;
+            font-size: 0.85rem !important;
         }
 
         .resumo-box {
-            padding: 1rem 0.75rem;
+            padding: 1.2rem 0.75rem;
             margin: 1rem 0;
         }
 
         .info-item {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
 
         .estrela-btn {
-            font-size: 1.5rem !important;
+            font-size: 1.8rem !important;
         }
 
         /* Ocultar textos longos em mobile muito pequeno */
         .stMarkdown p {
             font-size: 0.9rem !important;
         }
+
+        h3 {
+            font-size: 1rem !important;
+        }
+    }
+
+    /* Animações suaves */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .titulo-principal {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    .resumo-box {
+        animation: fadeIn 0.8s ease-out;
     }
     </style>
 """, unsafe_allow_html=True)
