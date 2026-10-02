@@ -1,6 +1,6 @@
 import streamlit as st
-from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
+import requests
 import re
 import time
 
@@ -100,99 +100,106 @@ ESTRELAS = {
 
 @st.cache_resource
 def extrair_projetos():
-    """Extrai títulos e links dos projetos usando Playwright."""
-    with sync_playwright() as p:
-        context = p.firefox.launch_persistent_context(
-            user_data_dir=None,
-            headless=True
-        )
-        page = context.new_page()
+    """Extrai títulos e links dos projetos usando requests."""
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+        response = requests.get(URL_BASE, headers=headers, timeout=10)
+        response.raise_for_status()
 
-        try:
-            page.goto(URL_BASE, wait_until="networkidle")
-            page.wait_for_selector("section#grade article.card-projeto", timeout=15000)
-            time.sleep(2)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        grade = soup.find('section', id='grade')
 
-            html = page.content()
-            soup = BeautifulSoup(html, 'html.parser')
-            grade = soup.find('section', id='grade')
+        if not grade:
+            return []
 
-            if not grade:
-                return []
+        cards = grade.find_all('article', class_='card-projeto')
 
-            cards = grade.find_all('article', class_='card-projeto')
-
-            projetos = []
-            for idx, card in enumerate(cards):
-                try:
-                    titulo_elem = card.find('strong')
-                    if not titulo_elem:
-                        continue
-                    titulo = titulo_elem.text.strip()
-
-                    link_elem = card.find('a', class_='botao')
-                    if not link_elem:
-                        continue
-                    link = link_elem.get('href', '')
-
-                    match = re.search(r'id=([a-zA-Z0-9]+)', link)
-                    if match:
-                        projeto_id = match.group(1)
-                        projetos.append({
-                            "id": idx,
-                            "titulo": titulo,
-                            "link": link,
-                            "projeto_id": projeto_id
-                        })
-                except:
+        projetos = []
+        for idx, card in enumerate(cards):
+            try:
+                titulo_elem = card.find('strong')
+                if not titulo_elem:
                     continue
+                titulo = titulo_elem.text.strip()
 
-            return projetos
+                link_elem = card.find('a', class_='botao')
+                if not link_elem:
+                    continue
+                link = link_elem.get('href', '')
 
-        finally:
-            page.close()
-            context.close()
+                match = re.search(r'id=([a-zA-Z0-9]+)', link)
+                if match:
+                    projeto_id = match.group(1)
+                    projetos.append({
+                        "id": idx,
+                        "titulo": titulo,
+                        "link": link,
+                        "projeto_id": projeto_id
+                    })
+            except:
+                continue
+
+        return projetos
+
+    except Exception as e:
+        st.error(f"Erro ao carregar projetos: {str(e)}")
+        return []
 
 def votar_projeto(projeto_id, numero_votos, estrelas, progress_bar, status_text):
     """Realiza votação com número de estrelas específico."""
 
     votos_sucesso = 0
 
-    for voto_num in range(1, numero_votos + 1):
-        with sync_playwright() as p:
-            context = p.firefox.launch_persistent_context(
-                user_data_dir=None,
-                headless=True
-            )
-            page = context.new_page()
+    try:
+        session = requests.Session()
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
 
+        for voto_num in range(1, numero_votos + 1):
             try:
                 url_projeto = f"https://cti.colegios.fve.edu.br/feira/projeto.html?id={projeto_id}"
-                page.goto(url_projeto, wait_until="networkidle")
 
-                # Seleciona a estrela específica
-                page.wait_for_selector("span:has-text('5')", timeout=10000)
-                page.click(f"span:has-text('{estrelas} ')")
+                # Faz requisição GET para carregar a página
+                response = session.get(url_projeto, headers=headers, timeout=10)
+                response.raise_for_status()
 
-                time.sleep(0.5)
-                page.click("button[type='submit']")
+                # Extrai token CSRF se existir (comum em formulários)
+                soup = BeautifulSoup(response.content, 'html.parser')
 
-                votos_sucesso += 1
+                # Prepara dados para POST da votação
+                dados = {
+                    'projeto_id': projeto_id,
+                    'estrelas': estrelas,
+                    'voto': 1
+                }
+
+                # Tenta enviar votação
+                response_voto = session.post(
+                    url_projeto,
+                    data=dados,
+                    headers=headers,
+                    timeout=10
+                )
+
+                if response_voto.status_code in [200, 201]:
+                    votos_sucesso += 1
 
             except Exception as e:
                 pass
 
-            finally:
-                page.close()
-                context.close()
+            # Atualiza progresso
+            progress = voto_num / numero_votos
+            progress_bar.progress(progress)
+            status_text.info(f"⏳ Progresso: {voto_num}/{numero_votos} votos | ⭐ {estrelas} estrelas")
 
-        # Atualiza progresso
-        progress = voto_num / numero_votos
-        progress_bar.progress(progress)
-        status_text.info(f"⏳ Progresso: {voto_num}/{numero_votos} votos | ⭐ {estrelas} estrelas")
+            if voto_num < numero_votos:
+                time.sleep(1)
 
-        if voto_num < numero_votos:
-            time.sleep(2)
+    except Exception as e:
+        status_text.error(f"Erro ao votar: {str(e)}")
 
     return votos_sucesso
 
