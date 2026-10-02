@@ -482,14 +482,20 @@ st.markdown(f"""
 st.markdown("---")
 
 st.subheader("🔢 Quantos Votos?")
-num_votos = st.slider(
-    "Número de vezes que deseja votar:",
-    min_value=1,
-    max_value=500,
-    value=10,
-    step=1,
-    label_visibility="collapsed"
-)
+col_input, col_info = st.columns([2, 1])
+
+with col_input:
+    num_votos = st.number_input(
+        "Digite a quantidade de votos:",
+        min_value=1,
+        max_value=999999,
+        value=10,
+        step=1,
+        label_visibility="collapsed"
+    )
+
+with col_info:
+    st.metric("Total", f"{num_votos:,}".replace(",", "."))
 
 st.markdown("---")
 
